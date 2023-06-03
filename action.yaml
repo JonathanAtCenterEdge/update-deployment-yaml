@@ -56,7 +56,7 @@ runs:
         deployment="${{ inputs.deployment }}"
         dir=$(dirname "$deployment")
         name=$(basename "$deployment")
-        cp "$deployment" "$dir/${name%.*}-temp.${name##*.}"
+        cp "$deployment" "$dir/${{ name%.* }}-temp.${{ name##*. }}"
       else
         echo "Deployment file doesn't exist"
         exit 1
