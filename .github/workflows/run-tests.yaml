@@ -22,5 +22,8 @@ jobs:
         image: test
         container: whoami-container
         deployment: ./deployment.yaml
+      env:
+        test_env: test
+        test_env1: test
 
     - run: cat ./deployment.yaml

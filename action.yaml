@@ -49,3 +49,12 @@ runs:
       yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
         .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
     shell: bash
+
+  - run: |
+      # Loop through environment variables
+      for envVar in $(env | cut -d'=' -f1); do
+        value=${!envVar}
+        echo "Environment variable name: $envVar"
+        echo "Environment variable value: $value"
+      done
+    shell: bash
