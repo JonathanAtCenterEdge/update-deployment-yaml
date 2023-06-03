@@ -17,7 +17,7 @@ jobs:
       run: kustomize build './test/kustomize' > deployment.yaml
 
     - name: Update - Image
-      uses: JonathanAtCenterEdge/update-deployment-yaml@${GITHUB_REF}
+      uses: JonathanAtCenterEdge/update-deployment-yaml@${{ GITHUB_REF }}
       with:
         image: test
         container: whoami-container
