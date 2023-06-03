@@ -92,3 +92,6 @@ runs:
 
   - run: diff <(yq -P 'sort_keys(..)' ${{ inputs.deployment }}) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)
     shell: bash
+
+  - run: ls
+    shell: bash
