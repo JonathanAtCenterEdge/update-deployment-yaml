@@ -53,7 +53,10 @@ runs:
         .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
     shell: bash
 
-  - run: |
+  - name: Update environment variables
+    id: udy-update-env
+    if: ${{ inputs.env }} != ""
+    run: |
       # Remove leading and trailing whitespace
       param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
 
@@ -67,11 +70,11 @@ runs:
       for item in "${items[@]}"; do
         # Remove leading and trailing whitespace
         item=$(echo "$item" | awk '{$1=$1};1')
-        echo "Item: $item"
 
         # Extract key and value
         IFS='=' read -r key value <<< "$item"
-        echo "Key: $key"
-        echo "Value: $value"
+
+        yq --inplace --indent 1 '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+          .env |= map(select(.name == "$key").value = $value)' ${{ inputs.deployment }}
       done
     shell: bash
