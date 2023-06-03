@@ -51,10 +51,10 @@ runs:
 
   - name: Update image
     id: udy-update-image
-    if: ${{ inputs.image != "" }}
+    if: ${{ inputs.image }} != ""
     run: |
       inplace_arg=""
-      [[ ${{ inputs.inplace == "true" }} ]] && inplace_arg="--inplace"
+      [[ ${{ inputs.inplace }} == "true" ]] && inplace_arg="--inplace"
 
       yq $inplace_arg --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == ${{ inputs.container }}))
         .image |= ${{ inputs.image }}' ${{ inputs.deployment }}
