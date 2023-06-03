@@ -55,7 +55,6 @@ runs:
       if [[ -f ${{ inputs.deployment }} ]]; then
         deployment=${{ inputs.deployment }}
         deployment=${deployment%.*}-udy-temp.${deployment##*.}
-
         cp "${{ inputs.deployment }}" "${deployment}"
         echo "deployment-temp=${deployment}" >> $GITHUB_OUTPUT
       else
@@ -64,16 +63,16 @@ runs:
       fi
     shell: bash
 
-  - run: echo ${{ steps.udy-copy.outputs.deployment-temp }}
-    shell: bash
-
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image }} != ""
     run: |
-      deployment=${{ inputs.deployment }}
-      deployment=${deployment%.*}-udy-temp.${deployment##*.}
-
       yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${deployment}
+        .image |= "${{ inputs.image }}"' ${{ steps.udy-copy.outputs.deployment-temp }}
+    shell: bash
+
+  - name: Apply inplace
+    id: udy-apply-inplace
+    if: ${{ inputs.inpace }} == "true"
+    run: cp "${{ steps.udy-copy.outputs.deployment-temp }}" "${{ inputs.deployment }}"
     shell: bash
