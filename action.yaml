@@ -74,11 +74,10 @@ runs:
         # Extract key and value
         IFS='=' read -r key value <<< "$item"
 
-        echo $key
-
+        export key
         export value
 
         yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == "TEXT_RESPONSE").value = env(value))' ${{ inputs.deployment }}
+          .env |= map(select(.name == env(key)).value = env(value))' ${{ inputs.deployment }}
       done
     shell: bash
