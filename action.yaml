@@ -53,7 +53,10 @@ runs:
     id: udy-copy
     run: |
       if [[ -f ${{ inputs.deployment }} ]]; then
-        cp ${{ inputs.deployment }} "./udy-temp${${{ inputs.deployment }}##*.}"
+        deployment=${{ inputs.deployment }}
+        dir=$(dirname "$deployment")
+        name=$(basename "$deployment")
+        cp "$deployment" "$directory/$${deployment%.*}-temp.${deployment##*.}
       else
         echo "Deployment file doesn't exist"
         exit 1
