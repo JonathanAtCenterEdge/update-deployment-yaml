@@ -58,7 +58,7 @@ runs:
       param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
 
       # Split the multiline string into an array
-      IFS=',' read -ra items <<< "$param"
+      IFS=$'\n' read -ra items <<< "$param"
 
       # Loop through the array
       for item in "${items[@]}"; do
@@ -67,11 +67,8 @@ runs:
         echo "Item: $item"
 
         # Extract key and value
-        if [[ $item =~ ([^=]+)=(.+) ]]; then
-          key="${BASH_REMATCH[1]}"
-          value="${BASH_REMATCH[2]}"
-          echo "Key: $key"
-          echo "Value: $value"
-        fi
+        IFS='=' read -r key value <<< "$item"
+        echo "Key: $key"
+        echo "Value: $value"
       done
     shell: bash
