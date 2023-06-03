@@ -6,7 +6,7 @@ branding:
   color: blue
 inputs:
   deployment:
-    description: Yaml file containing the deployment resource
+    description: yaml file containing the deployment resource
     required: true
   container:
     description: Name of the container to target
@@ -25,6 +25,11 @@ inputs:
     description: Optionally specify the indention used for yq
     required: false
     default: "1"
+
+outputs:
+  deployment-yaml:
+    description: The final adjusted yaml
+    value: ${{ steps.udy-cleanup.outputs.deployment }}
 
 runs:
   using: composite
@@ -75,4 +80,16 @@ runs:
     id: udy-apply-inplace
     if: ${{ inputs.inpace }} == "true"
     run: cp "${{ steps.udy-copy.outputs.deployment-temp }}" "${{ inputs.deployment }}"
+    shell: bash
+
+  - name: Cleanup
+    id: udy-cleanup
+    if: always()
+    run: |
+      contents=""
+      if [ -f "${{ steps.udy-copy.outputs.deployment-temp }}" ]; then
+        contents=$(cat ${{ steps.udy-copy.outputs.deployment-temp }})
+      fi
+      echo "deployment=${contents}" >> $GITHUB_OUTPUT
+      rm -f ${{ steps.udy-copy.outputs.deployment-temp }}
     shell: bash
