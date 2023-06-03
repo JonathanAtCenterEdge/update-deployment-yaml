@@ -21,13 +21,22 @@ inputs:
     description: If true will modify the the deployment resource in-place, when true you can still find the modified deployment resource in the actions' output
     required: false
     default: "true"
+  indention:
+    description: Optionally specify the indention used for yq
+    required: false
+    default: "1"
 
 runs:
   using: composite
   steps:
-  - name: Check yq version
-    id: udy-check-yq
+  - name: Check requirements
+    id: udy-check-requirements
     run: |
+      if [ "$RUNNER_OS" != "Linux" ]; then
+          echo "$RUNNER_OS not supported"
+          exit 1
+      fi
+
       if ! command -v yq >/dev/null 2>&1; then
         echo "yq is not installed. Please install yq version >= 4.x.x."
         exit 1
@@ -38,4 +47,15 @@ runs:
         echo "Invalid or unsupported yq version. Please install yq version >= 4.x.x."
         exit 1
       fi
+    shell: bash
+
+  - name: Update image
+    id: udy-update-image
+    if: ${{ inputs.image != "" }}
+    run: |
+      inplace_arg=""
+      [[ ${{ inputs.inplace == "true" }} ]] && inplace_arg="--inplace"
+
+      yq $inplace_arg --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == ${{ inputs.container }}))
+        .image |= ${{ inputs.image }}' ${{ inputs.deployment }}
     shell: bash
