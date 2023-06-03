@@ -54,23 +54,26 @@ runs:
     run: |
       if [[ -f ${{ inputs.deployment }} ]]; then
         deployment=${{ inputs.deployment }}
-        cp "$deployment" "${deployment%.*}-udy-temp.${deployment##*.}"
+        deployment=${deployment%.*}-udy-temp.${deployment##*.}
+
+        cp "${{ inputs.deployment }}" "${deployment}"
+        echo "deployment-temp=${deployment}" >> $GITHUB_OUTPUT
       else
         echo "Deployment file doesn't exist"
         exit 1
       fi
     shell: bash
 
+  - run: echo ${{ steps.udy-copy.outputs.deployment-temp }}
+    shell: bash
+
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image }} != ""
     run: |
-      inplace_arg=""
       deployment=${{ inputs.deployment }}
       deployment=${deployment%.*}-udy-temp.${deployment##*.}
 
-      [[ ${{ inputs.inplace }} == "true" ]] && inplace_arg="--inplace"
-
-      yq $inplace_arg --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+      yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
         .image |= "${{ inputs.image }}"' ${deployment}
     shell: bash
