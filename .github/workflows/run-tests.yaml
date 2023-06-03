@@ -22,8 +22,8 @@ jobs:
         image: test
         container: whoami-container
         deployment: ./deployment.yaml
-      env:
-        test_env: test
-        test_env1: test
-
+        env: |
+          RateLimiting__CreditCardPages__CountLimit=test,
+          RateLimiting__CreditCardPages__CountLimit1=test,
+          RateLimiting__CreditCardPages__CountLimit2=test,
     - run: cat ./deployment.yaml

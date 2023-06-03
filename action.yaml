@@ -14,6 +14,9 @@ inputs:
   image:
     description: Image string to replace in the targetted container deployment resource
     required: false
+  env:
+    description: List of environment variables, eg "[ 'TEST_ENV=QA', 'LOGGING=true' ]"
+    required: false
   indention:
     description: Optionally specify the indention used for yq
     required: false
@@ -51,10 +54,21 @@ runs:
     shell: bash
 
   - run: |
-      # Loop through environment variables
-      for envVar in $(env | cut -d'=' -f1); do
-        value=${!envVar}
-        echo "Environment variable name: $envVar"
-        echo "Environment variable value: $value"
+      # Remove leading and trailing whitespace
+      param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
+
+      # Split the multiline string into an array
+      IFS=',' read -ra items <<< "$param"
+
+      # Loop through the array
+      for item in "${items[@]}"; do
+        # Remove leading and trailing whitespace
+        item=$(echo "$item" | awk '{$1=$1};1')
+        echo "Item: $item"
+
+        # Extract key and value
+        IFS='=' read -r key value <<< "$item"
+        echo "Key: $key"
+        echo "Value: $value"
       done
     shell: bash
