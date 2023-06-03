@@ -16,8 +16,12 @@ jobs:
     - name: Kustomize - Build
       run: kustomize build './test/kustomize' > deployment.yaml
 
+    - name: Get commit SHA
+      id: commit
+      run: echo "::set-output name=sha::$(git rev-parse HEAD)"
+
     - name: Update - Image
-      uses: JonathanAtCenterEdge/update-deployment-yaml@${{ github.sha }}
+      uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.commit.outputs.sha }}
       with:
         image: test
         container: whoami-container
