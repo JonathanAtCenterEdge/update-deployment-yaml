@@ -22,7 +22,7 @@ jobs:
         image: test
         container: whoami-container
         deployment: ./deployment.yaml
-        env: TEXT_RESPONSE=test,
+        env: TEXT_RESPONSE=test
 
     - run: cat ./deployment.yaml
     - run: env

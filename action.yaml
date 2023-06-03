@@ -49,8 +49,8 @@ runs:
     id: udy-update-image
     if: ${{ inputs.image }} != ""
     run: |
-      yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
+      yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }} > ./deployment-temp.yaml
     shell: bash
 
   - name: Update environment variables
@@ -62,6 +62,11 @@ runs:
 
       # Remove all newlines and whitespace between commas
       param=$(echo "$param" | tr -d '\n' | sed 's/, */,/g')
+
+      # If the last character is not a comma, add a comma to ensure the final item is captured
+      if [[ ! $param =~ ,$ ]]; then
+        param+=","  # Add a comma to the end of the string
+      fi
 
       # Split the modified string into an array
       IFS=',' read -ra items <<< "$param"
@@ -78,6 +83,12 @@ runs:
         export value
 
         yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == env(key)).value = env(value))' ${{ inputs.deployment }}
+          .env |= map(select(.name == env(key)).value = env(value))' ./deployment-temp.yaml
       done
+    shell: bash
+
+  - run: ls
+    shell: bash
+
+  - run: diff <(yq -P 'sort_keys(..)' ${{ inputs.deployment }}) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)
     shell: bash
