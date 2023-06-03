@@ -14,22 +14,10 @@ inputs:
   image:
     description: Image string to replace in the targetted container deployment resource
     required: false
-  env:
-    description: List of environment variables to update in the targetted container deployment resource
-    required: false
-  inplace:
-    description: If true will modify the the deployment resource in-place, when true you can still find the modified deployment resource in the actions' output
-    required: false
-    default: "true"
   indention:
     description: Optionally specify the indention used for yq
     required: false
     default: "1"
-
-outputs:
-  deployment-yaml:
-    description: The final adjusted yaml
-    value: ${{ steps.udy-cleanup.outputs.deployment }}
 
 runs:
   using: composite
@@ -54,42 +42,10 @@ runs:
       fi
     shell: bash
 
-  - name: Copy deployment
-    id: udy-copy
-    run: |
-      if [[ -f ${{ inputs.deployment }} ]]; then
-        deployment=${{ inputs.deployment }}
-        deployment=${deployment%.*}-udy-temp.${deployment##*.}
-        cp "${{ inputs.deployment }}" "${deployment}"
-        echo "deployment-temp=${deployment}" >> $GITHUB_OUTPUT
-      else
-        echo "Deployment file doesn't exist"
-        exit 1
-      fi
-    shell: bash
-
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image }} != ""
     run: |
       yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${{ steps.udy-copy.outputs.deployment-temp }}
-    shell: bash
-
-  - name: Apply inplace
-    id: udy-apply-inplace
-    if: ${{ inputs.inpace }} == "true"
-    run: cp "${{ steps.udy-copy.outputs.deployment-temp }}" "${{ inputs.deployment }}"
-    shell: bash
-
-  - name: Cleanup
-    id: udy-cleanup
-    if: always()
-    run: |
-      contents=""
-      if [ -f "${{ steps.udy-copy.outputs.deployment-temp }}" ]; then
-        contents=$(cat ${{ steps.udy-copy.outputs.deployment-temp }})
-      fi
-      echo "deployment=${contents}" >> $GITHUB_OUTPUT
-      rm -f ${{ steps.udy-copy.outputs.deployment-temp }}
+        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
     shell: bash
