@@ -74,6 +74,8 @@ runs:
         # Extract key and value
         IFS='=' read -r key value <<< "$item"
 
+        echo $key
+
         yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
           .env |= map(select(.name == "$key").value = $value)' ${{ inputs.deployment }}
       done
