@@ -1,0 +1,41 @@
+name: 'Update'
+description: 'Update kubernetes configuration yamls and apply them to the current cluster'
+author: 'JonathanAtCenterEdge'
+branding:
+  icon: upload-cloud
+  color: blue
+inputs:
+  deployment:
+    description: Yaml file containing the deployment resource
+    required: true
+  container:
+    description: Name of the container to target
+    required: true
+  image:
+    description: Image string to replace in the targetted container deployment resource
+    required: false
+  env:
+    description: List of environment variables to update in the targetted container deployment resource
+    required: false
+  inplace:
+    description: If true will modify the the deployment resource in-place, when true you can still find the modified deployment resource in the actions' output
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+  - name: Check yq version
+    id: udy-check-yq
+    run: |
+      if ! command -v yq >/dev/null 2>&1; then
+        echo "yq is not installed. Please install yq version >= 4.x.x."
+        exit 1
+      fi
+
+      yq_version=$(yq --version | awk '{print $3}')
+      if [[ ! "$yq_version" =~ ^4\.[0-9]+\.[0-9]+ ]]; then
+        echo "Invalid yq version. Please install yq version >= 4.x.x."
+        exit 1
+      fi
+    shell: bash
