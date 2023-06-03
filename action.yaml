@@ -76,7 +76,9 @@ runs:
 
         echo $key
 
+        export value
+
         yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == "TEXT_RESPONSE").value = $(echo "$value"))' ${{ inputs.deployment }}
+          .env |= map(select(.name == "TEXT_RESPONSE").value = env(value))' ${{ inputs.deployment }}
       done
     shell: bash
