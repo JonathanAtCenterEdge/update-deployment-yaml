@@ -77,7 +77,7 @@ runs:
         export key
         export value
 
-        yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+        yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
           .env |= map(select(.name == env(key)).value = env(value))' ${{ inputs.deployment }}
       done
     shell: bash
