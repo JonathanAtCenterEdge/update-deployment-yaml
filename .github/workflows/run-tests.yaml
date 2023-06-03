@@ -23,4 +23,4 @@ jobs:
         container: whoami-container
         deployment: ./deployment.yaml
 
-    - run: ls
+    - run: cat ./deployment-udy-temp.yaml
