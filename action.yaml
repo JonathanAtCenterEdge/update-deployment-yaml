@@ -55,7 +55,7 @@ runs:
 
   - run: |
       # Remove leading and trailing whitespace
-      param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
+      param=$(echo "$param" | awk '{$1=$1};1')
 
       # Split the multiline string into an array
       IFS=',' read -ra items <<< "$param"
@@ -67,8 +67,11 @@ runs:
         echo "Item: $item"
 
         # Extract key and value
-        IFS='=' read -r key value <<< "$item"
-        echo "Key: $key"
-        echo "Value: $value"
+        if [[ $item =~ ([^=]+)=(.+) ]]; then
+          key="${BASH_REMATCH[1]}"
+          value="${BASH_REMATCH[2]}"
+          echo "Key: $key"
+          echo "Value: $value"
+        fi
       done
     shell: bash
