@@ -17,14 +17,10 @@ jobs:
       run: kustomize build './test/kustomize' > deployment.yaml
 
     - name: Update - Image
-      uses: JonathanAtCenterEdge/update-deployment-yaml@${{ github.ref_name }}
+      uses: JonathanAtCenterEdge/update-deployment-yaml@${{ github.sha }}
       with:
         image: test
         container: whoami-container
         deployment: ./deployment.yaml
-      env:
-        RateLimiting__CreditCardPages__CountLimit: asdsa
-        RateLimiting__CreditCardPages__CountLimit1: asdsa
-        RateLimiting__CreditCardPages__CountLimit2: asdsa
 
     - run: cat ./deployment.yaml
