@@ -52,5 +52,7 @@ runs:
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image }} != ""
-    run: yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == ${{ inputs.container }})) .image |= ${{ inputs.image }}' ${{ inputs.deployment }}
+    run: |
+      yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
     shell: bash
