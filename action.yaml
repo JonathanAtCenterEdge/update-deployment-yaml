@@ -49,6 +49,17 @@ runs:
       fi
     shell: bash
 
+  - name: Copy deployment
+    id: udy-copy
+    run: |
+      if [[ -f ${{ inputs.deployment }} ]]; then
+        cp ${{ inputs.deployment }} "./udy-temp${${{ inputs.deployment }}##*.}"
+      else
+        echo "Deployment file doesn't exist"
+        exit 1
+      fi
+    shell: bash
+
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image }} != ""
@@ -57,5 +68,5 @@ runs:
       [[ ${{ inputs.inplace }} == "true" ]] && inplace_arg="--inplace"
 
       yq $inplace_arg --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }}
+        .image |= "${{ inputs.image }}"' ./udy-temp${${{ inputs.deployment }}##*.}
     shell: bash
