@@ -55,7 +55,7 @@ runs:
 
   - run: |
       # Remove leading and trailing whitespace
-      param=$(echo "$param" | awk '{$1=$1};1')
+      param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
 
       # Split the multiline string into an array
       IFS=',' read -ra items <<< "$param"
