@@ -53,12 +53,24 @@ runs:
     id: udy-copy
     run: |
       if [[ -f ${{ inputs.deployment }} ]]; then
-        original_file=${{ inputs.deployment }}
-        new_file="${original_file%.*}-temp.${original_file##*.}"
-        cp "$original_file" "$new_file"
-        cat ${new_file}
+        deployment=${{ inputs.deployment }}
+        cp "$deployment" "${deployment%.*}-udy-temp.${deployment##*.}"
       else
         echo "Deployment file doesn't exist"
         exit 1
       fi
+    shell: bash
+
+  - name: Update image
+    id: udy-update-image
+    if: ${{ inputs.image }} != ""
+    run: |
+      inplace_arg=""
+      deployment=${{ inputs.deployment }}
+      deployment=${deployment%.*}-udy-temp.${deployment##*.}
+
+      [[ ${{ inputs.inplace }} == "true" ]] && inplace_arg="--inplace"
+
+      yq $inplace_arg --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+        .image |= "${{ inputs.image }}"' ${deployment}
     shell: bash
