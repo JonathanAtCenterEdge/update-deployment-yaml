@@ -34,4 +34,31 @@ jobs:
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
-    - run: yq eval '.spec.template.spec.containers[whoami-container].image == "${{ github.sha }}"' ./deployment.yaml
+    - run: yq eval '.spec.template.spec.containers["whoami-container"].image == "${{ github.sha }}"' ./deployment.yaml
+
+  # Test updating only env
+  test-env:
+    name: Test - Env
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+  # Test updating only multiline env
+  test-env-multi:
+    name: Test - Env multiline
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+  # Test updating image and env
+  test-image-env:
+    name: Test - Image & Env
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
