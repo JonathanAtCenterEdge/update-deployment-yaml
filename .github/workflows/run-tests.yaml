@@ -30,12 +30,11 @@ jobs:
 
     - uses: GuillaumeFalourd/assert-command-line-output@v2
       with:
-        command_line: cat ./deployment.yaml
+        command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
     - run: cat ./deployment.yaml
-    - run: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .image == "${{ github.sha }}"' ./deployment.yaml
 
   # Test updating only env
   test-env:
