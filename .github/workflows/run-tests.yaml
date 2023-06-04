@@ -32,14 +32,14 @@ jobs:
         with: '{ "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
 
     - name: Container should not contain old image version
-      uses: GuillaumeFalourd/assert-command-line-output@main
+      uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
         command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
         contains: ${{ github.sha }}
         expected_result: FAILED
 
     - name: Container should contain new image version
-      uses: GuillaumeFalourd/assert-command-line-output@main
+      uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
         command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
         contains: "image: ${{ github.sha }}"
