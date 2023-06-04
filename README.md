@@ -1,5 +1,5 @@
 ## `JonathanAtCenterEdge/update-deployment-yaml@main`
-GitHub action that utilizes the yq yaml processor to modify the image and environment variables for a specified container for a single k8s deployment yaml resource
+GitHub action that utilizes the [yq yaml processor](https://github.com/mikefarah/yq) to modify the image and environment variables for a specified container for a single k8s deployment yaml resource
 
 This takes a `.yaml` file as an input that contains a `Kind: Deployment` resource inside of it, and modifies the `image` and `env` fields in `.spec.template.spec.containers[]` matching a `container[]` entry by name using the [yq yaml processor](https://github.com/mikefarah/yq) that's shipped in the `ubuntu-20.04` and up GitHub action runner
 
