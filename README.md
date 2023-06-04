@@ -14,7 +14,7 @@ This takes a `.yaml` file as an input that contains a `Kind: Deployment` resourc
       image: traefik/whoami:v1.9 # new image version
       container: whoami-container # the container in the deployment matching via name property
       deployment: ./deployment.yaml # the deployment file, usually this has already been baked by kustomize
-      env: TEXT_RESPONSE=test # a list of environment variables to replace, comma seperated and optionally multieline
+      env: TEXT_RESPONSE=test # a list of environment variables to replace, comma seperated and optionally multiline
       
       indention: 1 # optional configureation of the yq indention switch
       diff-lines: 3 # optionally configure the diff command context lines
@@ -23,7 +23,7 @@ This takes a `.yaml` file as an input that contains a `Kind: Deployment` resourc
 You can pass multiple environment variables seperated by a comma, optionally multi-line is supported
 ```yaml
 with:
-  env: | # mult-line
+  env: | # multi-line
       TEXT_RESPONSE=test,
       TEXT_RESPONSE_NEW=test,
       TEXT_RESPONSE_LEGACY=test,
