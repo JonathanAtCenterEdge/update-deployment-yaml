@@ -8,8 +8,11 @@ jobs:
 
   # Test updating only image without env
   test-image:
-    name: Test - Image
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest]
+    name: Test - Image [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
     steps:
 
     - name: Checkout
@@ -27,6 +30,12 @@ jobs:
       with:
         uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
         with: '{ "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
+
+    - uses: GuillaumeFalourd/assert-command-line-output@main
+      with:
+        command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
+        contains: "image: ${{ github.sha }}"
+        expected_result: FAILED
 
     - uses: GuillaumeFalourd/assert-command-line-output@main
       with:
