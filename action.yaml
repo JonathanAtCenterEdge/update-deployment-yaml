@@ -21,7 +21,10 @@ inputs:
     description: Optionally specify the indention used for yq
     required: false
     default: "1"
-
+  diff-lines:
+    description: Configure the number of lines shown on the diff step
+    required: false
+    default: "3"
 runs:
   using: composite
   steps:
@@ -93,7 +96,7 @@ runs:
     shell: bash
 
   - run: |
-      diff_output=$(diff --color=always -C 3 --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ${{ steps.udy-init.outputs.deployment-temp }})) || true
+      diff_output=$(diff --color=always -C ${{ inputs.diff-lines }} --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ${{ steps.udy-init.outputs.deployment-temp }})) || true
       echo -e "${diff_output}"
       mv  ${{ steps.udy-init.outputs.deployment-temp }} ${{ inputs.deployment }}
     shell: bash
