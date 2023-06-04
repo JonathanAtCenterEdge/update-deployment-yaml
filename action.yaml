@@ -93,7 +93,7 @@ runs:
     shell: bash
 
   - run: |
-      diff_output=$(diff --color=always -C 5 --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ${{ steps.udy-init.outputs.deployment-temp }})) || true
+      diff_output=$(diff --color=always -C 3 --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ${{ steps.udy-init.outputs.deployment-temp }})) || true
       echo -e "${diff_output}"
       mv  ${{ steps.udy-init.outputs.deployment-temp }} ${{ inputs.deployment }}
     shell: bash
