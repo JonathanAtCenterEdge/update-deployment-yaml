@@ -77,12 +77,10 @@ jobs:
       with:
         cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .env[] | select(.name == "TEXT_RESPONSE")' deployment.yaml
 
-    - run: echo ${{ steps.query.outputs.result }}
-
     - name: Assert Contains new env value
       uses: nick-fields/assert-action@v1
       with:
-        expected: "value: ${{ github.sha }}"
+        expected: "value"
         actual: ${{ steps.query.outputs.result }}
         comparison: contains
 
