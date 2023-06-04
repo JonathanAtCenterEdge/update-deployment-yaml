@@ -80,7 +80,7 @@ jobs:
     - name: Assert Contains new env value
       uses: nick-fields/assert-action@v1
       with:
-        expected: "value"
+        expected: "value: \"${{ github.sha }}\""
         actual: ${{ steps.query.outputs.result }}
         comparison: contains
 
