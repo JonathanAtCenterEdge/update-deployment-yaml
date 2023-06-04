@@ -14,11 +14,9 @@ inputs:
   image:
     description: Image string to replace in the targetted container deployment resource
     required: false
-    default: ""
   env:
     description: List of environment variables, eg "[ 'TEST_ENV=QA', 'LOGGING=true' ]"
     required: false
-    default: ""
   indention:
     description: Optionally specify the indention used for yq
     required: false
@@ -65,7 +63,7 @@ runs:
 
   - name: Update environment variables
     id: udy-update-env
-    if: ${{ inputs.env }} != ""
+    if: ${{ inputs.env != '' && inputs.env != null }}
     run: |
       # Remove leading and trailing whitespace
       param=$(echo "${{ inputs.env }}" | awk '{$1=$1};1')
