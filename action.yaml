@@ -46,6 +46,7 @@ runs:
 
       deployment=${{ inputs.deployment }}
       deployment=${deployment%.*}-udy-temp.${deployment##*.}
+      cp ${{ inputs.deployment }} ${deployment}
       echo "deployment-temp=${deployment}" >> $GITHUB_OUTPUT
     shell: bash
 
@@ -53,8 +54,8 @@ runs:
     id: udy-update-image
     if: ${{ inputs.image }} != ""
     run: |
-      yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }} > ${{ steps.udy-init.outputs.deployment-temp }}
+      yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+        .image |= "${{ inputs.image }}"' ${{ steps.udy-init.outputs.deployment-temp }}
     shell: bash
 
   - name: Update environment variables
