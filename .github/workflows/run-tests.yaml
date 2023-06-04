@@ -22,6 +22,6 @@ jobs:
         image: test
         container: whoami-container
         deployment: ./deployment.yaml
-        env: TEXT_RESPONSE=test
+        env: TEXT_RESPONSE=00000-00000000-0000000
 
     - run: cat ./deployment.yaml
