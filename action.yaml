@@ -89,9 +89,6 @@ runs:
 
         value="\"$value\""
 
-        echo $key
-        echo $value
-
         export key
         export value
 
