@@ -19,9 +19,9 @@ jobs:
     - name: Update
       uses: JonathanAtCenterEdge/update-deployment-yaml@main
       with:
-        image: test
-        container: whoami-container
-        deployment: ./deployment.yaml
-        env: TEXT_RESPONSE="00000-00000000-0000000"
+        image: traefik/whoami:v1.9 # new image version
+        container: whoami-container # the container in the deployment matching via name property
+        deployment: ./deployment.yaml # the deployment file, usually this has already been baked by kustomize
+        env: TEXT_RESPONSE=test # a list of environment variables to replace, comma seperated and optionally multieline
 
     - run: cat ./deployment.yaml
