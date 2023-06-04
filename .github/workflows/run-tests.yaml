@@ -37,6 +37,7 @@ jobs:
       uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
         command_line: cat deployment.yaml
+        assert_file_path: deployment.yaml
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
