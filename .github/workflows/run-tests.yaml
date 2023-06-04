@@ -35,7 +35,7 @@ jobs:
       id: query
       uses: mikefarah/yq@master
       with:
-        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "\whoami-container" and .image == "${{ github.sha }}")' deployment.yaml
+        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' deployment.yaml
 
     - name: Assert Contains new image version
       uses: nick-fields/assert-action@v1
