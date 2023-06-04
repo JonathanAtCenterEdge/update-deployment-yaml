@@ -25,19 +25,21 @@ jobs:
     - name: Bake
       run: kustomize build './test/kustomize' > deployment.yaml
 
-    - name: Update with dynamic uses
+    - name: Update with dynamic uses [${{ steps.branch-name.outputs.current_branch }}]
       uses: jenseng/dynamic-uses@v1
       with:
         uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
         with: '{ "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
 
-    - uses: GuillaumeFalourd/assert-command-line-output@main
+    - name: Container should not contain old image version
+      uses: GuillaumeFalourd/assert-command-line-output@main
       with:
         command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
-        contains: "image: ${{ github.sha }}"
+        contains: ${{ github.sha }}
         expected_result: FAILED
 
-    - uses: GuillaumeFalourd/assert-command-line-output@main
+    - name: Container should contain new image version
+      uses: GuillaumeFalourd/assert-command-line-output@main
       with:
         command_line: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container" and .image == "${{ github.sha }}")' ./deployment.yaml
         contains: "image: ${{ github.sha }}"
