@@ -13,10 +13,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Kustomize - Build
+    - name: Bake
       run: kustomize build './test/kustomize' > deployment.yaml
 
-    - name: Update - Image
+    - name: Update
       uses: JonathanAtCenterEdge/update-deployment-yaml@main
       with:
         image: test
