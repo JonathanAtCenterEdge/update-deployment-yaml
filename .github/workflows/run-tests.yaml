@@ -183,7 +183,7 @@ jobs:
       uses: jenseng/dynamic-uses@v1
       with:
         uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
-        with: '{ "env": "TEXT_RESPONSE=${{ github.sha }}, \n PORT=1000", "image: ${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
+        with: '{ "env": "TEXT_RESPONSE=${{ github.sha }}, \n PORT=1000", "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
 
     - name: Query TEXT_RESPONSE deployment.yaml
       id: query-text-response
