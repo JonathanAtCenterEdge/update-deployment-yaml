@@ -123,18 +123,18 @@ jobs:
       with:
         cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .env[] | select(.name == "PORT")' deployment.yaml
 
-    - name: Assert PORT contains new env value
-      uses: nick-fields/assert-action@v1
-      with:
-        expected: "value: \"1000\""
-        actual: ${{ steps.query.outputs.result }}
-        comparison: contains
-
     - name: Assert TEXT_RESPONSE contains new env value
       uses: nick-fields/assert-action@v1
       with:
         expected: "value: \"${{ github.sha }}\""
-        actual: ${{ steps.query.outputs.result }}
+        actual: ${{ steps.query-text-response.outputs.result }}
+        comparison: contains
+
+    - name: Assert PORT contains new env value
+      uses: nick-fields/assert-action@v1
+      with:
+        expected: "value: \"1000\""
+        actual: ${{ steps.query-port.outputs.result }}
         comparison: contains
 
     - run: cat ./deployment.yaml
