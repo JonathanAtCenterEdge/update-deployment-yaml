@@ -75,7 +75,7 @@ jobs:
       id: query
       uses: mikefarah/yq@master
       with:
-        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .env[] | select(.name == "TEXT_RESPONSE" and .value == "${{ github.sha }}")' deployment.yaml
+        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .env[] | select(.name == "TEXT_RESPONSE")' deployment.yaml
 
     - name: Assert Contains new env value
       uses: nick-fields/assert-action@v1
