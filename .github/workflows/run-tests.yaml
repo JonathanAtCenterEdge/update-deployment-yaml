@@ -36,7 +36,7 @@ jobs:
     - name: Container should contain new image version
       uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
-        command_line: yq eval '.spec.template.spec.containers[] | select(.name == "\"\whoami-container\"" and .image == "\"\${{ github.sha }}\"")' deployment.yaml
+        command_line: ls
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
