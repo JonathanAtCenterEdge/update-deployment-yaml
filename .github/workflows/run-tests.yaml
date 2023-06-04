@@ -13,15 +13,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v7
+
     - name: Bake
       run: kustomize build './test/kustomize' > deployment.yaml
 
-    - name: Update
-      uses: JonathanAtCenterEdge/update-deployment-yaml@main
+    - name: Update with dynamic uses
+      uses: jenseng/dynamic-uses@v1
       with:
-        image: traefik/whoami:v1.9 # new image version
-        container: whoami-container # the container in the deployment matching via name property
-        deployment: ./deployment.yaml # the deployment file, usually this has already been baked by kustomize
-        env: TEXT_RESPONSE=test # a list of environment variables to replace, comma seperated and optionally multieline
+        uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
+        with: '{ "image": "${{ github.sha }}", "contaner": "whoami-container", "deployment": "./deployment.yaml" }'
 
     - run: cat ./deployment.yaml
