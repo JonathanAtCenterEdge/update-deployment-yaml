@@ -34,7 +34,7 @@ jobs:
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
-    - run: yq eval '.spec.template.spec.containers["whoami-container"].image == "${{ github.sha }}"' ./deployment.yaml
+    - run: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .image == ${{ github.sha }}' ./deployment.yaml
 
   # Test updating only env
   test-env:
