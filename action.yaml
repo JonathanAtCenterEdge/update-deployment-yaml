@@ -25,8 +25,8 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Check requirements
-    id: udy-check-requirements
+  - name: Init
+    id: udy-init
     run: |
       if [ "$RUNNER_OS" != "Linux" ]; then
           echo "$RUNNER_OS not supported"
@@ -43,6 +43,10 @@ runs:
         echo "Invalid or unsupported yq version. Please install yq version >= 4.x.x."
         exit 1
       fi
+
+      deployment=${{ inputs.deployment }}
+      deployment=${deployment%.*}-udy-temp.${deployment##*.}
+      echo "deployment-temp=${deployment}" >> $GITHUB_OUTPUT
     shell: bash
 
   - name: Update image
@@ -50,7 +54,7 @@ runs:
     if: ${{ inputs.image }} != ""
     run: |
       yq --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }} > ./deployment-temp.yaml
+        .image |= "${{ inputs.image }}"' ${{ inputs.deployment }} > ${{ steps.udy-init.outputs.deployment-temp }}
     shell: bash
 
   - name: Update environment variables
@@ -83,17 +87,12 @@ runs:
         export value
 
         yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == env(key)).value = env(value))' ./deployment-temp.yaml
+          .env |= map(select(.name == env(key)).value = env(value))' ${{ steps.udy-init.outputs.deployment-temp }}
       done
     shell: bash
 
-  - run: ls
-    shell: bash
-
   - run: |
-      diff_output=$(diff --color=always --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)) || true
+      diff_output=$(diff --color=always --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ${{ steps.udy-init.outputs.deployment-temp }})) || true
       echo -e "${diff_output}"
-    shell: bash
-
-  - run: ls
+      mv  ${{ steps.udy-init.outputs.deployment-temp }} ${{ inputs.deployment }}
     shell: bash
