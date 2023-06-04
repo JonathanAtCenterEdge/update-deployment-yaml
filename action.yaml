@@ -14,9 +14,11 @@ inputs:
   image:
     description: Image string to replace in the targetted container deployment resource
     required: false
+    default: ""
   env:
     description: List of environment variables, eg "[ 'TEST_ENV=QA', 'LOGGING=true' ]"
     required: false
+    default: ""
   indention:
     description: Optionally specify the indention used for yq
     required: false

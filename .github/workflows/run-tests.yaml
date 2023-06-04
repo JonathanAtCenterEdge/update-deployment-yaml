@@ -26,4 +26,10 @@ jobs:
         uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
         with: '{ "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
 
+    - uses: GuillaumeFalourd/assert-command-line-output@v2
+      with:
+        command_line: cat ./deployment.yaml
+        contains: "image: ${{ github.sha }}"
+        expected_result: PASSED
+
     - run: cat ./deployment.yaml
