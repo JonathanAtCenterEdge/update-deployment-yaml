@@ -90,7 +90,9 @@ runs:
   - run: ls
     shell: bash
 
-  - run: diff <(yq -P 'sort_keys(..)' ${{ inputs.deployment }}) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)
+  - run: |
+      diff_output=$(diff --color=always <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml))
+      echo -e "${diff_output}"
     shell: bash
 
   - run: ls
