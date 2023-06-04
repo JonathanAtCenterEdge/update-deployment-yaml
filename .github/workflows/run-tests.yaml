@@ -46,6 +46,13 @@ jobs:
 
     - run: cat ./deployment.yaml
 
+    - uses: alexellis/arkade-get@master
+      with:
+        kubeval: latest
+
+    - name: kubeval deployment.yaml
+      run: kubeval ./deployment.yaml
+
   # Test updating only env
   test-env:
     strategy:
@@ -85,6 +92,13 @@ jobs:
         comparison: contains
 
     - run: cat ./deployment.yaml
+
+    - uses: alexellis/arkade-get@master
+      with:
+        kubeval: latest
+
+    - name: kubeval deployment.yaml
+      run: kubeval ./deployment.yaml
 
   # Test updating only multiline env
   test-env-multi:
@@ -138,6 +152,13 @@ jobs:
         comparison: contains
 
     - run: cat ./deployment.yaml
+
+    - uses: alexellis/arkade-get@master
+      with:
+        kubeval: latest
+
+    - name: kubeval deployment.yaml
+      run: kubeval ./deployment.yaml
 
   # Test updating image and env
   test-image-env:
