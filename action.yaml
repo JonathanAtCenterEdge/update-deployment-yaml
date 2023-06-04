@@ -87,6 +87,8 @@ runs:
         # Extract key and value
         IFS='=' read -r key value <<< "$item"
 
+        value="\"$value\""
+
         echo $key
         echo $value
 
@@ -94,7 +96,7 @@ runs:
         export value
 
         yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == env(key)).value = "${value}")' ${{ steps.udy-init.outputs.deployment-temp }}
+          .env |= map(select(.name == env(key)).value = env(value))' ${{ steps.udy-init.outputs.deployment-temp }}
       done
     shell: bash
 
