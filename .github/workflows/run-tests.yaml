@@ -5,6 +5,8 @@ on:
 
 name: Test - Kustomization
 jobs:
+
+  # Test updating only image without env
   test-image:
     name: Test - Image
     runs-on: ubuntu-22.04
@@ -32,4 +34,4 @@ jobs:
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
-    - run: cat ./deployment.yaml
+    - run: yq eval '.spec.template.spec.containers[whoami-container].image == "${{ github.sha }}"' ./deployment.yaml
