@@ -36,8 +36,8 @@ jobs:
     - name: Container should contain new image version
       uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
-        command_line: cat deployment.yaml
-        assert_file_path: deployment.yaml
+        command_line: ls -lha
+        assert_file_path: ./deployment.yaml
         expected_result: PASSED
 
     - run: cat ./deployment.yaml
