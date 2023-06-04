@@ -19,6 +19,52 @@ This takes a `.yaml` file as an input that contains a `Kind: Deployment` resourc
       indention: 1 # optional configureation of the yq indention switch
       diff-lines: 3 # optionally configure the diff command context lines
 ```
+## Multiple environment variables
+You can pass multiple environment variables seperated by a comma, optionally multi-line is supported
+```yaml
+with:
+  env: | # mult-line
+      TEXT_RESPONSE=test,
+      TEXT_RESPONSE_NEW=test,
+      TEXT_RESPONSE_LEGACY=test,
+```
+
+## Highlighted modifications
+Whenever the action finishes it will print a diff of the modifications, for example
+```diff
+*** 31,38 ****
+              - name: PORT
+                value: "8080"
+              - name: TEXT_RESPONSE
+!               value: Hello, World!
+!           image: containous/whoami
+            name: whoami-container
+            ports:
+              - containerPort: 80
+--- 31,38 ----
+              - name: PORT
+                value: "8080"
+              - name: TEXT_RESPONSE
+!               value: 00000-00000000-0000000
+!           image: test
+            name: whoami-container
+            ports:
+              - containerPort: 80
+```
+
+## Example
+```yaml
+- name: Update
+    uses: JonathanAtCenterEdge/update-deployment-yaml@main
+    with:
+      image: traefik/whoami:v1.9 # new image version
+      container: whoami-container # the container in the deployment matching via name property
+      deployment: ./deployment.yaml # the deployment file, usually this has already been baked by kustomize
+      env: TEXT_RESPONSE=test # a list of environment variables to replace, comma seperated and optionally multieline
+      
+      indention: 1 # optional configureation of the yq indention switch
+      diff-lines: 3 # optionally configure the diff command context lines
+```
 
 Will update my baked `./deployment.yaml` from this
 ```yaml
@@ -102,38 +148,4 @@ spec:
           name: whoami-container
           ports:
             - containerPort: 80
-```
-
-
-## Multiple environment variables
-You can pass multiple environment variables seperated by a comma, optionally multi-line is supported
-```yaml
-with:
-  env: | # mult-line
-      TEXT_RESPONSE=test,
-      TEXT_RESPONSE_NEW=test,
-      TEXT_RESPONSE_LEGACY=test,
-```
-
-## Highlighted modifications
-Whenever the action finishes it will print a diff of the modifications, for example
-```diff
-*** 31,38 ****
-              - name: PORT
-                value: "8080"
-              - name: TEXT_RESPONSE
-!               value: Hello, World!
-!           image: containous/whoami
-            name: whoami-container
-            ports:
-              - containerPort: 80
---- 31,38 ----
-              - name: PORT
-                value: "8080"
-              - name: TEXT_RESPONSE
-!               value: 00000-00000000-0000000
-!           image: test
-            name: whoami-container
-            ports:
-              - containerPort: 80
 ```
