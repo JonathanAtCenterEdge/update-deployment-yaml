@@ -48,17 +48,51 @@ jobs:
 
   # Test updating only env
   test-env:
-    name: Test - Env
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest]
+    name: Test - Env [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
     steps:
 
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v7
+
+    - name: Bake
+      run: kustomize build './test/kustomize' > deployment.yaml
+
+    - name: Update with dynamic uses [${{ steps.branch-name.outputs.current_branch }}]
+      uses: jenseng/dynamic-uses@v1
+      with:
+        uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
+        with: '{ "env": "TEXT_RESPONSE=${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
+
+    - name: Query deployment.yaml
+      id: query
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "whoami-container") | .env[] | select(.name == "TEXT_RESPONSE" and .value == "${{ github.sha }}")' deployment.yaml
+
+    - name: Assert Contains new env value
+      uses: nick-fields/assert-action@v1
+      with:
+        expected: "value: ${{ github.sha }}"
+        actual: ${{ steps.query.outputs.result }}
+        comparison: contains
+
+    - run: cat ./deployment.yaml
+
   # Test updating only multiline env
   test-env-multi:
-    name: Test - Env multiline
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest]
+    name: Test - Env multi-line [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
     steps:
 
     - name: Checkout
@@ -66,8 +100,11 @@ jobs:
 
   # Test updating image and env
   test-image-env:
-    name: Test - Image & Env
-    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest]
+    name: Test - Image & Env [${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
     steps:
 
     - name: Checkout
