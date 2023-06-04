@@ -91,7 +91,7 @@ runs:
     shell: bash
 
   - run: |
-      diff_output=$(diff --color=always <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)) || true
+      diff_output=$(diff --color=always --ignore-space-change <(yq -P 'sort_keys(..)' ./deployment.yaml) <(yq -P 'sort_keys(..)' ./deployment-temp.yaml)) || true
       echo -e "${diff_output}"
     shell: bash
 
