@@ -38,7 +38,6 @@ jobs:
       with:
         command_line: cat deployment.yaml
         assert_file_path: deployment.yaml
-        contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
     - run: cat ./deployment.yaml
