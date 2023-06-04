@@ -31,14 +31,18 @@ jobs:
         uses: JonathanAtCenterEdge/update-deployment-yaml@${{ steps.branch-name.outputs.current_branch }}
         with: '{ "image": "${{ github.sha }}", "container": "whoami-container", "deployment": "./deployment.yaml" }'
 
-    - run: ls
-
-    - name: Container should contain new image version
-      uses: GuillaumeFalourd/assert-command-line-output@v2.1
+    - name: Query deployment.yaml
+      id: query
+      uses: mikefarah/yq@master
       with:
-        command_line: ls
-        contains: deployment.yaml
-        expected_result: PASSED
+        cmd: yq eval '.spec.template.spec.containers[] | select(.name == "\whoami-container" and .image == "${{ github.sha }}")' deployment.yaml
+
+    - name: Assert Contains new image version
+      uses: nick-fields/assert-action@v1
+      with:
+        expected: "image: ${{ github.sha }}"
+        actual: ${{ steps.query.outputs.result }}
+        comparison: contains
 
     - run: cat ./deployment.yaml
 
