@@ -3,7 +3,7 @@ GitHub action that utilizes the yq yaml processor to modify the image and enviro
 
 This takes a `.yaml` file as an input that contains a `Kind: Deployment` resource inside of it, and modifies the `image` and `env` fields in `.spec.template.spec.containers[]` matching a `container[]` entry by name using the [yq yaml processor](https://github.com/mikefarah/yq) that's shipped in the `ubuntu-20.04` and up GitHub action runner
 
-### That means this action only supports `ubuntu-20.04` and `ubuntu-22.04` runners
+#### That means this action only supports `ubuntu-20.04` and `ubuntu-22.04` runners
 
 
 ## Usage
@@ -66,19 +66,39 @@ into this
 ```yaml
 apiVersion: v1
 kind: Service
+metadata:
+  name: whoami-service
+spec:
+  ports:
+    - nodePort: 30080
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: whoami
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: whoami-deployment
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
   template:
+    metadata:
+      labels:
+        app: whoami
     spec:
       containers:
         - env:
             - name: PORT
               value: "8080"
             - name: TEXT_RESPONSE
-              value: "00000-00000000-0000000"
-          image: test
+              value: "test"
+          image: traefik/whoami:v1.9
           name: whoami-container
           ports:
             - containerPort: 80
