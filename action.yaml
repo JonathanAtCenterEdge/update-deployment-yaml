@@ -91,7 +91,7 @@ runs:
         export value
 
         yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
-          .env |= map(select(.name == env(key)).value = env(value))' ${{ steps.udy-init.outputs.deployment-temp }}
+          .env |= map(select(.name == env(key)).value = "env(value)")' ${{ steps.udy-init.outputs.deployment-temp }}
       done
     shell: bash
 
