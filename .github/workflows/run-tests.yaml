@@ -36,7 +36,7 @@ jobs:
     - name: Container should contain new image version
       uses: GuillaumeFalourd/assert-command-line-output@v3
       with:
-        command_line: ls
+        command_line: cat deployment.yaml
         contains: "image: ${{ github.sha }}"
         expected_result: PASSED
 
