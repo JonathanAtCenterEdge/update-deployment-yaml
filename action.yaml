@@ -57,7 +57,7 @@ runs:
     id: udy-update-image
     if: ${{ inputs.image != '' && inputs.image != null }}
     run: |
-      yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
+      yq eval --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}"))
         .image |= "${{ inputs.image }}"' ${{ steps.udy-init.outputs.deployment-temp }}
     shell: bash
 
