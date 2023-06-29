@@ -56,7 +56,7 @@ runs:
   - name: Update image
     id: udy-update-image
     if: ${{ inputs.image != '' && inputs.image != null }}
-    run: yq --inplace --indent ${{ inputs.indention }} '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "${{ inputs.container }}")) .image |= "${{ inputs.image }}"' ${{ steps.udy-init.outputs.deployment-temp }}
+    run: yq --inplace --indent 1 '(select(.spec.template.spec.containers[]) | .spec.template.spec.containers[] | select(.name == "webstores")).image |= "us-east4-docker.pkg.dev/stage-193114/ci-registry/cecloud-webstores:PR-3653-shadde3cd18a1b6e7f1683a53c37ccb555b4ad0732e"' ./deployment-udy-temp.yaml
     shell: bash
 
   - name: Update environment variables
